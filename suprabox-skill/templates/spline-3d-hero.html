@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAGE TITLE — SPLINE 3D</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<!-- SPLINE RUNTIME — required for 3D -->
+<script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.96/build/spline-viewer.js"></script>
+<style>
+/* ── TEMPLATE B: SPLINE 3D HERO ──
+   Replace SPLINE_URL with your scene URL
+   from spline.design (publish → get embed URL)
+   ─────────────────────────────────────────── */
+
+:root {
+  --bg:#000; --s1:#0a0a0a; --s2:#111;
+  --border:rgba(255,255,255,.08);
+  --teal:#00e5ff; --gold:#f5a623; --green:#00e5a0;
+  --text:#fff; --muted:#666; --dim:#444;
+  --r-md:14px; --r-lg:20px; --r-full:9999px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+
+/* LOADER */
+#loader{position:fixed;inset:0;z-index:9999;background:#000;display:flex;align-items:center;justify-content:center;transition:opacity .8s,visibility .8s;}
+#loader.out{opacity:0;visibility:hidden;}
+.ld-ring{width:48px;height:48px;border:2px solid rgba(255,255,255,.1);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* HEADER */
+header{position:fixed;top:0;left:0;right:0;z-index:100;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 40px;background:rgba(0,0,0,.4);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,.06);}
+.brand-name{font-size:18px;font-weight:900;letter-spacing:.04em;color:#fff;}
+.nav{display:flex;align-items:center;gap:8px;}
+.nav-link{font-size:13px;font-weight:500;color:rgba(255,255,255,.5);padding:7px 14px;border-radius:8px;text-decoration:none;transition:all .2s;cursor:pointer;}
+.nav-link:hover{background:rgba(255,255,255,.06);color:#fff;}
+.nav-cta{font-size:13px;font-weight:700;padding:8px 18px;border-radius:var(--r-full);background:var(--teal);color:#000;border:none;cursor:pointer;transition:all .2s;}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 0 30px rgba(0,229,255,.4);}
+
+/* ── HERO WITH SPLINE 3D ── */
+.hero{
+  position:relative;
+  height:100vh;min-height:700px;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+
+/* Spline 3D container */
+.spline-container{
+  position:absolute;inset:0;z-index:0;
+}
+.spline-container spline-viewer{
+  width:100%;height:100%;
+  pointer-events:none;
+}
+/* Gradient overlay — makes text readable */
+.spline-overlay{
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(
+    to bottom,
+    rgba(0,0,0,.5) 0%,
+    rgba(0,0,0,.2) 40%,
+    rgba(0,0,0,.7) 80%,
+    rgba(0,0,0,.95) 100%
+  );
+}
+/* Left dark vignette */
+.spline-overlay::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 80% at 50% 50%,transparent 40%,rgba(0,0,0,.6));
+}
+
+/* Hero content — above 3D */
+.hero-content{
+  position:relative;z-index:2;
+  text-align:center;padding:0 24px;
+  max-width:860px;
+}
+
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 16px;border-radius:var(--r-full);
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+  font-size:11px;font-weight:700;letter-spacing:.15em;
+  color:rgba(255,255,255,.6);text-transform:uppercase;
+  margin-bottom:32px;
+  animation:fadeUp .7s .2s both;
+}
+.eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);box-shadow:0 0 10px var(--teal);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.hero-h1{
+  font-size:clamp(52px,8vw,110px);
+  font-weight:900;letter-spacing:-.04em;line-height:.9;
+  margin-bottom:24px;
+  animation:fadeUp .7s .35s both;
+}
+.h1-line1{display:block;color:#fff;}
+.h1-line2{
+  display:block;
+  background:linear-gradient(135deg,var(--teal),#7dd3fc);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+
+.hero-sub{
+  font-size:18px;font-weight:400;line-height:1.7;
+  color:rgba(255,255,255,.55);
+  max-width:560px;margin:0 auto 48px;
+  animation:fadeUp .7s .5s both;
+}
+
+.hero-actions{
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  animation:fadeUp .7s .65s both;
+}
+.btn-primary{
+  padding:14px 32px;border-radius:var(--r-full);
+  background:var(--teal);color:#000;
+  font-size:14px;font-weight:800;letter-spacing:.04em;
+  border:none;cursor:pointer;
+  transition:all .3s;position:relative;overflow:hidden;
+}
+.btn-primary::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.3) 50%,transparent 65%);transform:translateX(-100%) skewX(-10deg);transition:transform .55s;}
+.btn-primary:hover::after{transform:translateX(160%) skewX(-10deg);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 40px rgba(0,229,255,.4);}
+.btn-secondary{
+  padding:14px 32px;border-radius:var(--r-full);
+  background:rgba(255,255,255,.06);color:rgba(255,255,255,.8);
+  font-size:14px;font-weight:700;letter-spacing:.04em;
+  border:1px solid rgba(255,255,255,.12);cursor:pointer;
+  transition:all .2s;
+}
+.btn-secondary:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2);}
+
+/* Scroll indicator */
+.scroll-hint{
+  position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
+  z-index:2;display:flex;flex-direction:column;align-items:center;gap:8px;
+  animation:fadeUp .7s .9s both;
+  opacity:.5;
+}
+.scroll-line{width:1px;height:48px;background:linear-gradient(180deg,transparent,rgba(255,255,255,.5),transparent);animation:scrollPulse 2s ease-in-out infinite;}
+@keyframes scrollPulse{0%,100%{opacity:.3}50%{opacity:1}}
+.scroll-txt{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;color:rgba(255,255,255,.4);text-transform:uppercase;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── FEATURES SECTION ── */
+.features{padding:96px 40px;max-width:1100px;margin:0 auto;}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+@media(max-width:800px){.feat-grid{grid-template-columns:1fr;}}
+
+.feat-card{
+  padding:28px;border-radius:var(--r-lg);
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.07);
+  transition:all .3s cubic-bezier(.16,1,.3,1);
+  opacity:0;transform:translateY(20px);
+  animation:fadeUp .6s cubic-bezier(.16,1,.3,1) both;
+}
+.feat-card:nth-child(1){animation-delay:.05s}
+.feat-card:nth-child(2){animation-delay:.1s}
+.feat-card:nth-child(3){animation-delay:.15s}
+.feat-card:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12);transform:translateY(-6px);}
+
+.feat-icon{
+  width:44px;height:44px;border-radius:12px;
+  background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:18px;
+}
+.feat-icon svg{width:22px;height:22px;stroke:var(--teal);fill:none;stroke-width:1.6;}
+.feat-title{font-size:16px;font-weight:700;margin-bottom:8px;color:#fff;}
+.feat-desc{font-size:13px;line-height:1.7;color:rgba(255,255,255,.45);}
+
+/* FOOTER */
+footer{padding:24px 40px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.ft-left{font-size:12px;color:rgba(255,255,255,.3);}
+.ft-right{display:flex;gap:20px;}
+.ft-link{font-size:12px;color:rgba(255,255,255,.3);text-decoration:none;transition:color .2s;}
+.ft-link:hover{color:rgba(255,255,255,.7);}
+
+/* MOBILE */
+@media(max-width:640px){
+  header{padding:0 20px;}
+  .hero-h1{font-size:clamp(44px,14vw,72px);}
+  .hero-actions{flex-direction:column;}
+  .features{padding:64px 20px;}
+  footer{padding:20px;}
+}
+</style>
+</head>
+<body>
+
+<div id="loader"><div class="ld-ring"></div></div>
+
+<!-- HEADER -->
+<header>
+  <div class="brand-name">BRAND</div>
+  <nav class="nav">
+    <a class="nav-link">Features</a>
+    <a class="nav-link">About</a>
+    <button class="nav-cta">Get Started</button>
+  </nav>
+</header>
+
+<!-- HERO WITH SPLINE 3D -->
+<section class="hero">
+
+  <!-- 3D BACKGROUND — Replace URL with your Spline scene -->
+  <div class="spline-container">
+    <spline-viewer
+      url="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode"
+      loading-anim="true"
+    ></spline-viewer>
+  </div>
+  <div class="spline-overlay"></div>
+
+  <!-- HERO CONTENT -->
+  <div class="hero-content">
+    <div class="hero-eyebrow">
+      <div class="eyebrow-dot"></div>
+      BADGE TEXT · SUBTITLE
+    </div>
+    <h1 class="hero-h1">
+      <span class="h1-line1">Your Main</span>
+      <span class="h1-line2">Headline Here</span>
+    </h1>
+    <p class="hero-sub">
+      Compelling description of what your product does — clear, direct, impactful.
+    </p>
+    <div class="hero-actions">
+      <button class="btn-primary">Get Started →</button>
+      <button class="btn-secondary">Learn More</button>
+    </div>
+  </div>
+
+  <!-- Scroll hint -->
+  <div class="scroll-hint">
+    <div class="scroll-line"></div>
+    <span class="scroll-txt">Scroll</span>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+  <div class="feat-grid">
+    <div class="feat-card">
+      <div class="feat-icon"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8z"/></svg></div>
+      <div class="feat-title">Feature One</div>
+      <div class="feat-desc">Description of this feature — explain the value it provides to the user.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg></div>
+      <div class="feat-title">Feature Two</div>
+      <div class="feat-desc">Description of this feature — keep it concise and benefit-focused.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <div class="feat-title">Feature Three</div>
+      <div class="feat-desc">Description of this feature — what problem does it solve?</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="ft-left">© 2025 Your Name · Project Name</div>
+  <div class="ft-right">
+    <a class="ft-link" href="#">Contact</a>
+    <a class="ft-link" href="#">Privacy</a>
+  </div>
+</footer>
+
+<script>
+window.addEventListener('load',()=>setTimeout(()=>document.getElementById('loader').classList.add('out'),1000));
+</script>
+</body>
+</html>
